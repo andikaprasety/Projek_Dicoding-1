@@ -7,6 +7,7 @@ class SongsHandler {
 
         this.postSongHandler = this.postSongHandler.bind(this);
         this.getSongsHandler = this.getSongsHandler.bind(this);
+        this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
     }
 
     async postSongHandler(request, h) {
@@ -67,6 +68,40 @@ class SongsHandler {
                 songs,
             },
         };
+    }
+
+    async getSongByIdHandler(request, h) {
+        try {
+            const { id } = request.params;
+            const song = await this._service.getSongById(id);
+            // eslint-disable-next-line radix
+            song.year = parseInt(song.year);
+            // eslint-disable-next-line radix
+            song.duration = parseInt(song.duration);
+            return {
+                status: 'success',
+                data: {
+                    song,
+                },
+            };
+        } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;
+            }
+
+            const response = h.response({
+                status: 'error',
+                message: 'Maaf, terjadi kegagalan pada server kami.',
+            });
+            response.code(500);
+            console.error(error);
+            return response;
+        }
     }
 }
 
