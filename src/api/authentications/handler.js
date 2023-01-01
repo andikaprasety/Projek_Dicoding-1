@@ -7,11 +7,12 @@ class AuthenticationsHandler {
         this._tokenManager = tokenManager;
         this._validator = validator;
 
-        this.postAuthenticationsHandler = this.postAuthenticationsHandler.bind(this);
+        this.postAuthenticationHandler = this.postAuthenticationHandler.bind(this);
         this.putAuthenticationHandler = this.putAuthenticationHandler.bind(this);
+        this.deleteAuthenticationHandler = this.deleteAuthenticationHandler.bind(this);
     }
 
-    async postAuthenticationsHandler(request, h) {
+    async postAuthenticationHandler(request, h) {
         try {
             this._validator.validatePostAuthenticationPayload(request.payload);
 
@@ -68,6 +69,38 @@ class AuthenticationsHandler {
                 data: {
                     accessToken,
                 },
+            };
+        } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                  status: 'fail',
+                  message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;
+            }
+
+            const response = h.response({
+                status: 'error',
+                message: 'Maaf, terjadi kegagalan pada server kami.',
+            });
+            response.code(500);
+            console.error(error);
+            return response;
+        }
+    }
+
+    async deleteAuthenticationHandler(request, h) {
+        try {
+            this._validator.validateDeleteAuthenticationPayload(request.payload);
+
+            const { refreshToken } = request.payload;
+            await this._authenticationsService.verifyRefreshToken(refreshToken);
+            await this._authenticationsService.deleteRefreshToken(refreshToken);
+
+            return {
+                status: 'success',
+                message: 'Refresh token berhasil dihapus',
             };
         } catch (error) {
             if (error instanceof ClientError) {
