@@ -69,6 +69,17 @@ class PlaylistsService {
             throw new NotFoundError('Playlist gagal dihapus. Id tidak ditemukan');
         }
     }
+
+    async getOwnerPlaylistById(playlistId) {
+        const query = {
+            text: 'SELECT playlists.owner FROM playlists WHERE id = $1',
+            values: [playlistId],
+        };
+
+        const result = await this._pool.query(query);
+
+        return result.rows[0].owner;
+    }
 }
 
 module.exports = PlaylistsService;
