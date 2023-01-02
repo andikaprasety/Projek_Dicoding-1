@@ -64,12 +64,11 @@ class PlaylistSongsHandler {
             const playlists = await this._playlistsService.getPlaylistById(owner, playlistId);
             const songs = await this._songsService.getSongsByPlaylistId(playlistId);
             playlists.songs = songs;
-            console.log(playlists);
 
             return {
                 status: 'success',
                 data: {
-                    playlists,
+                    playlist: playlists,
                 },
             };
         } catch (error) {
