@@ -40,6 +40,18 @@ class PlaylistsService {
         return result.rows;
     }
 
+    async getPlaylistById(owner, playlistId) {
+        const query = {
+            text: `SELECT playlists.id, playlists.name, users.username FROM playlists 
+            LEFT JOIN users ON playlists.owner = users.id
+            WHERE owner = $1 AND playlists.id = $2`,
+            values: [owner, playlistId],
+        };
+        const result = await this._pool.query(query);
+
+        return result.rows[0];
+    }
+
     async verifyPlaylistOwner(id, owner) {
         const query = {
             text: 'SELECT * FROM playlists WHERE id = $1',
