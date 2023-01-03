@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class PlaylistSongsService {
     constructor() {
@@ -21,6 +22,19 @@ class PlaylistSongsService {
         }
 
         return result.rows[0].id;
+    }
+
+    async deletePlaylistSong(songId) {
+        const query = {
+            text: 'DELETE FROM playlist_songs WHERE song_id = $1',
+            values: [songId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rows.length) {
+            throw new NotFoundError('Lagu di playlist gagal dihapus. Id tidak ditemukan');
+        }
     }
 }
 
