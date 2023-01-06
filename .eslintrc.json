@@ -2,7 +2,8 @@
     "env": {
         "commonjs": true,
         "es2021": true,
-        "node": true
+        "node": true,
+        "eol-last": ["error", "never"]
     },
     "extends": "airbnb-base",
     "overrides": [

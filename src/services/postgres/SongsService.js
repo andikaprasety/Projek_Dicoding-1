@@ -2,14 +2,14 @@ const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
-const { mapDBToModelSong, mapDBToModelPlaylistSongs } = require('../../utils');
+const { mapDBToModelSong} = require('../../utils');
 
 class SongsService {
     constructor() {
         this._pool = new Pool();
     }
 
-    async addSong({
+    async addSongs({
         title,
         year,
         genre,
@@ -37,12 +37,13 @@ class SongsService {
 
     async getSongs() {
         const result = await this._pool.query('SELECT id, title, performer FROM songs');
+        console.log(result.rows.map(mapDBToModelSong));
         return result.rows.map(mapDBToModelSong);
     }
 
-    async getSongById(id) {
+    async getSongsById(id) {
         const query = {
-            text: 'SELECT * FROM songs where id = $1',
+            text: "SELECT * FROM songs WHERE id = $1",
             values: [id],
         };
         const result = await this._pool.query(query);
@@ -54,19 +55,7 @@ class SongsService {
         return result.rows.map(mapDBToModelSong)[0];
     }
 
-    async getSongsByPlaylistId(playlistId) {
-        const query = {
-            text: `SELECT songs.id, songs.title, songs.performer FROM songs
-            JOIN playlist_songs ON songs.id = playlist_songs.song_id
-            JOIN playlists ON playlist_songs.playlist_id = playlists.id
-            WHERE playlist_id = $1`,
-            values: [playlistId],
-        };
-        const result = await this._pool.query(query);
-        return result.rows.map(mapDBToModelPlaylistSongs);
-    }
-
-    async editSongById(id, {
+    async editSongsById(id, {
         title,
         year,
         genre,
@@ -87,7 +76,7 @@ class SongsService {
         }
     }
 
-    async deleteSongById(id) {
+    async deleteSongsById(id) {
         const query = {
             text: 'DELETE FROM songs WHERE id = $1 RETURNING id',
             values: [id],
