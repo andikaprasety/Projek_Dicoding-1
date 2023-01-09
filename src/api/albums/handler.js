@@ -51,7 +51,6 @@ class AlbumsHandler {
         try {
             const { id } = request.params;
             const album = await this._service.getAlbumById(id);
-            // eslint-disable-next-line radix
             album.year = parseInt(album.year);
             return {
                 status: 'success',

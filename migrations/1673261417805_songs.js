@@ -11,7 +11,7 @@ exports.up = (pgm) => {
             notNull: true,
         },
         year: {
-            type: 'Number',
+            type: 'INTEGER',
             notNull: true,
         },
         genre: {
@@ -23,9 +23,9 @@ exports.up = (pgm) => {
             notNull: true,
         },
         duration: {
-            type: 'Number',
+            type: 'INTEGER',
         },
-        albumId: {
+        album_Id: {
             type: 'TEXT',
         },
         created_at: {
